@@ -37,6 +37,7 @@ public class ClientConnectionHandler implements Runnable {
 						+ clientSocket.getPort() + "> " 
 						+ message);
 
+				synchronized (clientsSockets) {
 					for(Socket clientSocket : clientsSockets) {
 						if(stopFlag) break;
 						if(clientSocket.isClosed()) break;
@@ -47,6 +48,7 @@ public class ClientConnectionHandler implements Runnable {
 						socketWriter.newLine();
 						socketWriter.flush();
 					}
+				}
 				
 			} catch (IOException e) {
 				logger.error("Network error", e);
