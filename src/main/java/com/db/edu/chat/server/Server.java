@@ -15,7 +15,7 @@ public class Server {
 	public static final String HOST = "127.0.0.1";
 	public static final int PORT = 1235;
 	
-	private final Collection<Socket> clientsSockets = new java.util.ArrayList<Socket>();//new LinkedList<Socket>();
+	private final Collection<Socket> clientsSockets = new java.util.concurrent.CopyOnWriteArrayList<Socket>();
 	private boolean stopFlag;
 	private ServerSocket serverSocket;
 	private Thread connectionEventLoop = new Thread() {
