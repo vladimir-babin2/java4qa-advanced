@@ -1,4 +1,4 @@
-package com.db.edu.chat.server.test;
+package com.db.edu.chat.server;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
