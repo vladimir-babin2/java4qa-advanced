@@ -5,12 +5,13 @@ import static org.junit.Assert.*;
 import java.io.IOException;
 import java.net.Socket;
 
+import org.junit.Ignore;
 import org.junit.Test;
 
 public class ChatServerAdminTest {
 	private Server testServer;
 	
-	@Test
+	@Test @Ignore
 	public void shouldListenPortWhenStarted() throws ServerError {
 		testServer = new Server();
 		testServer.start();
@@ -23,7 +24,7 @@ public class ChatServerAdminTest {
 		}
 	}
 
-	@Test(expected=IOException.class)
+	@Test(expected=IOException.class) @Ignore
 	public void shouldReleasePortWhenStopped() throws ServerError, IOException {
 		testServer = new Server();
 		testServer.start();
