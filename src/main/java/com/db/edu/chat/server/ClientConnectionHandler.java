@@ -31,7 +31,6 @@ public class ClientConnectionHandler implements Runnable {
 			try {
 				BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
 				String message = socketReader.readLine();
-				socketReader.readLine(); // skip newLine(); 
 				logger.debug("Message from client" 
 						+ clientSocket.getInetAddress() + ":" 
 						+ clientSocket.getPort() + "> " 
