@@ -21,7 +21,10 @@ public class Client {
 			public void run() {
 				while(true) {
 					try {
-						System.out.println(socketReader.readLine());
+						String message = socketReader.readLine();
+						if(message == null) break;
+						
+						System.out.println(message);
 					} catch (IOException e) {
 						e.printStackTrace();
 					}

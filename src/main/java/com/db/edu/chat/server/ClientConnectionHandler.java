@@ -31,21 +31,23 @@ public class ClientConnectionHandler implements Runnable {
 			try {
 				BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
 				String message = socketReader.readLine();
-				logger.debug("Message from client" 
+				if(message == null) break;
+				
+				logger.info("Message from client " 
 						+ clientSocket.getInetAddress() + ":" 
 						+ clientSocket.getPort() + "> " 
 						+ message);
 
-					for(Socket clientSocket : clientsSockets) {
-						if(stopFlag) break;
-						if(clientSocket.isClosed()) break;
-						if(clientSocket.equals(this.clientSocket)) continue;
-						
-						BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-						socketWriter.write(message);
-						socketWriter.newLine();
-						socketWriter.flush();
-					}
+				for(Socket clientSocket : clientsSockets) {
+					if(stopFlag) break;
+					if(clientSocket.isClosed()) break;
+					if(clientSocket.equals(this.clientSocket)) continue;
+					
+					BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+					socketWriter.write(message);
+					socketWriter.newLine();
+					socketWriter.flush();
+				}
 				
 			} catch (IOException e) {
 				logger.error("Network error", e);

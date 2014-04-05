@@ -3,6 +3,7 @@ package com.db.edu.chat.server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.net.SocketException;
 import java.util.Collection;
 import java.util.LinkedList;
 
@@ -13,11 +14,12 @@ public class Server {
 	private static final Logger logger = LoggerFactory.getLogger(Server.class);
 	
 	public static final String HOST = "127.0.0.1";
-	public static final int PORT = 9090;
+	public static final int PORT = 4445;
 	
 	private final Collection<Socket> clientsSockets = new java.util.ArrayList<Socket>();//new LinkedList<Socket>();
-	private boolean stopFlag;
-	private ServerSocket serverSocket;
+	private volatile ServerSocket serverSocket;
+	private volatile boolean stopFlag;
+
 	private Thread connectionEventLoop = new Thread() {
 		@Override
 		public void run() {
@@ -31,6 +33,9 @@ public class Server {
 					Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
 					clientConnectionHandler.setDaemon(true);
 					clientConnectionHandler.start();
+				} catch (SocketException e) {
+					logger.debug("Intentionally closed socket: time to stop");
+					break;
 				} catch (IOException e) {
 					logger.error("Network error", e);
 					break;
