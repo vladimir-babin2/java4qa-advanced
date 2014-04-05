@@ -13,7 +13,7 @@ public class Server {
 	private static final Logger logger = LoggerFactory.getLogger(Server.class);
 	
 	public static final String HOST = "127.0.0.1";
-	public static final int PORT = 1235;
+	public static final int PORT = 9090;
 	
 	private final Collection<Socket> clientsSockets = new java.util.ArrayList<Socket>();//new LinkedList<Socket>();
 	private boolean stopFlag;

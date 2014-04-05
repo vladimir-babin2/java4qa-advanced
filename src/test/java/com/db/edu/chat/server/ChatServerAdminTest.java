@@ -1,30 +1,26 @@
 package com.db.edu.chat.server;
 
-import static org.junit.Assert.*;
-
 import java.io.IOException;
+import java.net.ConnectException;
 import java.net.Socket;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 public class ChatServerAdminTest {
 	private Server testServer;
 	
-	@Test @Ignore
-	public void shouldListenPortWhenStarted() throws ServerError {
+	@Test 
+	public void shouldListenPortWhenStarted() throws ServerError, IOException {
 		testServer = new Server();
 		testServer.start();
 		try {
 			new Socket(Server.HOST, Server.PORT);
-		} catch (IOException e) {
-			fail(e.getMessage());
 		} finally {
 			testServer.stop();			
 		}
 	}
 
-	@Test(expected=IOException.class) @Ignore
+	@Test(expected=ConnectException.class) 
 	public void shouldReleasePortWhenStopped() throws ServerError, IOException {
 		testServer = new Server();
 		testServer.start();

@@ -61,20 +61,20 @@ public class ChatServerTest {
 	}
 	
 	
-	@Test(timeout=1000) @Ignore
+	@Test(timeout=1000)
 	public void shouldEchoMessageForSecondClient() throws IOException, ServerError {
 		socketWrite(socketWriter1, "test");
 		assertEquals("test", socketReader2.readLine());
 	}
 	
-	@Test(timeout=1000) @Ignore
+	@Test(timeout=1000) 
 	public void shouldEchoMessageForSecondAndThirdClient() throws IOException, ServerError {
 		socketWrite(socketWriter1, "test");
 		assertEquals("test", socketReader2.readLine());
 		assertEquals("test", socketReader3.readLine());
 	}
 	
-	@Test(timeout=1000) @Ignore
+	@Test(timeout=1000) 
 	public void shouldNotEchoMessageForSameClient() throws IOException, ServerError {
 		socketWrite(socketWriter1, "test");
 		socketWrite(socketWriter2, "test2");
