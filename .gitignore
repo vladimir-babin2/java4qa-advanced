@@ -9,3 +9,4 @@ release.properties
 *.log
 .idea
 *.iml
+.DS_Store
