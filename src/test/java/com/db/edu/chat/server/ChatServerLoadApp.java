@@ -6,16 +6,19 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
-import java.net.UnknownHostException;
 
-import com.db.edu.chat.server.Server;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-public class ChatServerLoadTest {
+
+public class ChatServerLoadApp {
+    private static final Logger logger = LoggerFactory.getLogger(ChatServerLoadApp.class);
+
 	public static void main(String... args) throws IOException {
 		while(true) {
-			ChatServerLoadTest.sleep(1);
-			final Socket socket = new Socket(Server.HOST, Server.PORT);
-			
+			ChatServerLoadApp.sleep(1);
+            final Socket socket = new Socket(Server.HOST, Server.PORT);
+
 			new Thread() {
 				@Override
 				public void run() {
@@ -24,7 +27,7 @@ public class ChatServerLoadTest {
 						String message = Thread.currentThread().getName();
 						
 						while(true) {
-							ChatServerLoadTest.sleep(1);
+							ChatServerLoadApp.sleep(1);
 							socketWrite(socketWriter, message);
 						}
 					} catch (IOException e) {

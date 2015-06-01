@@ -1,4 +1,7 @@
-import com.db.edu.chat.server.Server;
+package com.db.edu.chat.server;
+
+import static org.junit.Assume.assumeNotNull;
+
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +19,14 @@ public class JUnitLoadTest {
         final String sentMessage = Thread.currentThread().getName() + ";seed:" + Math.random();
         logger.debug("Sending message: " + sentMessage);
 
-        final Socket readerClientSocket = new Socket(Server.HOST, Server.PORT);
+        Socket readerClientSocket = null;
+        try {
+            readerClientSocket = new Socket(Server.HOST, Server.PORT);
+        } catch (IOException e) {
+            logger.error("Can't connect to server: ", e);
+        }
+        assumeNotNull(readerClientSocket);
+
         final BufferedReader readerClientSocketReader
                 = new BufferedReader(new InputStreamReader(readerClientSocket.getInputStream()));
 
