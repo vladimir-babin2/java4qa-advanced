@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 public class ClientConnectionHandler implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(ClientConnectionHandler.class);
 	
-	private boolean stopFlag;
 	private Socket clientSocket;
 	private final Collection<Socket> clientsSockets;
 
@@ -27,7 +26,7 @@ public class ClientConnectionHandler implements Runnable {
 
 	
 	public void run() {
-		while(!stopFlag) {
+		while(true) {
 			try {
 				BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
 				String message = socketReader.readLine();
@@ -39,9 +38,10 @@ public class ClientConnectionHandler implements Runnable {
 						+ message);
 
 				for(Socket clientSocket : clientsSockets) {
-					if(stopFlag) break;
-					if(clientSocket.isClosed()) break;
-					if(clientSocket.equals(this.clientSocket)) continue;
+					if(clientSocket.isClosed()) continue;
+					if(!clientSocket.isBound()) continue;
+					if(!clientSocket.isConnected()) continue;
+					if(clientSocket == this.clientSocket) continue;
 					
 					BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
 					socketWriter.write(message);
@@ -50,8 +50,8 @@ public class ClientConnectionHandler implements Runnable {
 				}
 				
 			} catch (IOException e) {
-				logger.error("Network error", e);
-				break;
+				logger.error("Network error with connection", e);
+				continue;
 			}
 		}
 	}

@@ -40,7 +40,7 @@ public class ChatServerLoadTest {
 					try {
 						BufferedReader socketReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
 						while(true) {
-							socketReader.readLine();
+							System.out.println( ">>>>" + socketReader.readLine() );
 						}
 					} catch (IOException e) {
 						e.printStackTrace();
