@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class ClientConnectionHandler implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(ClientConnectionHandler.class);
 	
-	private Socket clientSocket;
+	private final Socket clientSocket;
 	private final Collection<Socket> clientsSockets;
 
 	public ClientConnectionHandler(Socket clientSocket, Collection<Socket> clientsSockets) throws IOException {
@@ -31,28 +31,36 @@ public class ClientConnectionHandler implements Runnable {
 				BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
 				String message = socketReader.readLine();
 				if(message == null) break;
-				
-				logger.info("Message from client " 
-						+ clientSocket.getInetAddress() + ":" 
-						+ clientSocket.getPort() + "> " 
+
+				logger.info("Message from client "
+						+ clientSocket.getInetAddress() + ":"
+						+ clientSocket.getPort() + "> "
 						+ message);
 
 				for(Socket clientSocket : clientsSockets) {
-					if(clientSocket.isClosed()) continue;
-					if(!clientSocket.isBound()) continue;
-					if(!clientSocket.isConnected()) continue;
-					if(clientSocket == this.clientSocket) continue;
-					
-					BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
-					socketWriter.write(message);
-					socketWriter.newLine();
-					socketWriter.flush();
+					try {
+						if(clientSocket.isClosed()) continue;
+						if(!clientSocket.isBound()) continue;
+						if(!clientSocket.isConnected()) continue;
+						if(clientSocket == this.clientSocket) continue;
+
+                        logger.info("Writing message "
+                            + message
+                            + " to socket "
+                            + clientSocket);
+
+                        BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+						socketWriter.write(message);
+						socketWriter.newLine();
+						socketWriter.flush();
+					} catch (IOException e) {
+						logger.error("Error writing message " + message + " to socket " + clientSocket, e);
+					}
 				}
-				
 			} catch (IOException e) {
-				logger.error("Network error with connection", e);
-				continue;
+				logger.error("Network reading message from socket " + clientSocket, e);
 			}
+
 		}
 	}
 }
