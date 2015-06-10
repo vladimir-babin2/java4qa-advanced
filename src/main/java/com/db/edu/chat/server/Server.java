@@ -5,7 +5,6 @@ import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
 import java.util.Collection;
-import java.util.LinkedList;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,7 +15,7 @@ public class Server {
 	public static final String HOST = "127.0.0.1";
 	public static final int PORT = 4445;
 	
-	private final Collection<Socket> clientsSockets = new LinkedList<>();
+	private final Collection<Socket> clientsSockets = new java.util.concurrent.CopyOnWriteArrayList<>();
 	private volatile ServerSocket serverSocket;
 	private volatile boolean stopFlag;
 
@@ -28,9 +27,7 @@ public class Server {
 					Socket clientSocket = serverSocket.accept();
 					logger.info("Client connected: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
 
-					synchronized (clientsSockets) {
-						clientsSockets.add(clientSocket);
-					}
+					clientsSockets.add(clientSocket);
 
 					Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
 					clientConnectionHandler.setDaemon(true);

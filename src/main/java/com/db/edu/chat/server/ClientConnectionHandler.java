@@ -27,7 +27,7 @@ public class ClientConnectionHandler implements Runnable {
 	public void run() {
 		while(true) {
 			try {
-				BufferedReader socketReader = new BufferedReader(new InputStreamReader(inSocket.getInputStream()));;
+				BufferedReader socketReader = new BufferedReader(new InputStreamReader(inSocket.getInputStream()));
 				String message = socketReader.readLine();
 				if(message == null) break;
 
@@ -36,33 +36,28 @@ public class ClientConnectionHandler implements Runnable {
 						+ inSocket.getPort() + "> "
 						+ message);
 
-				Socket outSocket;
-				synchronized (clientsSockets) {
-					for (Iterator<Socket> iterator = clientsSockets.iterator(); iterator.hasNext();) {
-						outSocket = iterator.next();
+				for (Socket outSocket : clientsSockets) {
+					try {
+						if (outSocket.isClosed()) continue;
+						if (!outSocket.isBound()) continue;
+						if (!outSocket.isConnected()) continue;
+						if (outSocket == this.inSocket) continue;
+						logger.info("Writing message " + message + " to socket " + outSocket);
 
+						BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(outSocket.getOutputStream()));
+						socketWriter.write(message);
+						socketWriter.newLine();
+						socketWriter.flush();
+					} catch (IOException e) {
+						logger.error("Error writing message " + message + " to socket " + outSocket + ". Closing socket", e);
 						try {
-							if (outSocket.isClosed()) continue;
-							if (!outSocket.isBound()) continue;
-							if (!outSocket.isConnected()) continue;
-							if (outSocket == this.inSocket) continue;
-							logger.info("Writing message " + message + " to socket " + outSocket);
-
-							BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(outSocket.getOutputStream()));
-							socketWriter.write(message);
-							socketWriter.newLine();
-							socketWriter.flush();
-						} catch (IOException e) {
-							logger.error("Error writing message " + message + " to socket " + outSocket + ". Closing socket", e);
-							try {
-								outSocket.close();
-							} catch (IOException innerE) {
-								logger.error("Error closing socket ", innerE);
-							}
-
-							logger.error("Removing connection " + outSocket);
-							iterator.remove();
+							outSocket.close();
+						} catch (IOException innerE) {
+							logger.error("Error closing socket ", innerE);
 						}
+
+						logger.error("Removing connection " + outSocket);
+						clientsSockets.remove(outSocket);
 					}
 				}
 
@@ -75,10 +70,8 @@ public class ClientConnectionHandler implements Runnable {
 				}
 
 				logger.error("Removing socket and stop this handler thread");
-				synchronized (clientsSockets) {
-					clientsSockets.remove(inSocket);
-					return;
-				}
+				clientsSockets.remove(inSocket);
+				return;
 			}
 
 		}
