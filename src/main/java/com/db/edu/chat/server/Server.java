@@ -16,7 +16,7 @@ public class Server {
 	public static final String HOST = "127.0.0.1";
 	public static final int PORT = 4445;
 	
-	private final Collection<Socket> clientsSockets = new java.util.ArrayList<Socket>();//new LinkedList<Socket>();
+	private final Collection<Socket> clientsSockets = new LinkedList<>();
 	private volatile ServerSocket serverSocket;
 	private volatile boolean stopFlag;
 
@@ -27,8 +27,10 @@ public class Server {
 				try {
 					Socket clientSocket = serverSocket.accept();
 					logger.info("Client connected: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-					
-					clientsSockets.add(clientSocket);
+
+					synchronized (clientsSockets) {
+						clientsSockets.add(clientSocket);
+					}
 
 					Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
 					clientConnectionHandler.setDaemon(true);
