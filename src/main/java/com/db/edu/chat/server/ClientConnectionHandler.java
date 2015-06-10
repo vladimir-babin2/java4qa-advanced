@@ -5,8 +5,6 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.io.Reader;
 import java.net.Socket;
 import java.util.Collection;
 
@@ -16,11 +14,11 @@ import org.slf4j.LoggerFactory;
 public class ClientConnectionHandler implements Runnable {
 	private static final Logger logger = LoggerFactory.getLogger(ClientConnectionHandler.class);
 	
-	private final Socket clientSocket;
+	private final Socket inSocket;
 	private final Collection<Socket> clientsSockets;
 
 	public ClientConnectionHandler(Socket clientSocket, Collection<Socket> clientsSockets) throws IOException {
-		this.clientSocket = clientSocket;
+		this.inSocket = clientSocket;
 		this.clientsSockets = clientsSockets;
 	}
 
@@ -28,43 +26,49 @@ public class ClientConnectionHandler implements Runnable {
 	public void run() {
 		while(true) {
 			try {
-				BufferedReader socketReader = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));;
+				BufferedReader socketReader = new BufferedReader(new InputStreamReader(inSocket.getInputStream()));;
 				String message = socketReader.readLine();
 				if(message == null) break;
 
 				logger.info("Message from client "
-						+ clientSocket.getInetAddress() + ":"
-						+ clientSocket.getPort() + "> "
+						+ inSocket.getInetAddress() + ":"
+						+ inSocket.getPort() + "> "
 						+ message);
 
-				for(Socket clientSocket : clientsSockets) {
+				for(Socket outSocket : clientsSockets) {
 					try {
-						if(clientSocket.isClosed()) continue;
-						if(!clientSocket.isBound()) continue;
-						if(!clientSocket.isConnected()) continue;
-						if(clientSocket == this.clientSocket) continue;
+						if(outSocket.isClosed()) continue;
+						if(!outSocket.isBound()) continue;
+						if(!outSocket.isConnected()) continue;
+						if(outSocket == this.inSocket) continue;
 
                         logger.info("Writing message "
                             + message
                             + " to socket "
-                            + clientSocket);
+                            + outSocket);
 
-                        BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(clientSocket.getOutputStream()));
+                        BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(outSocket.getOutputStream()));
 						socketWriter.write(message);
 						socketWriter.newLine();
 						socketWriter.flush();
 					} catch (IOException e) {
-						logger.debug("Error writing message " + message + " to socket " + clientSocket + ". Closing socket", e);
+						logger.debug("Error writing message " + message + " to socket " + outSocket + ". Closing socket", e);
 						try {
-							clientSocket.close();
+							outSocket.close();
 						} catch (IOException innerE) {
 							logger.debug("Error closing socket ", innerE);
 						}
-						clientsSockets.remove(clientSocket);
+						clientsSockets.remove(outSocket);
 					}
 				}
 			} catch (IOException e) {
-				logger.error("Network reading message from socket " + clientSocket, e);
+				logger.debug("Network reading message from socket " + inSocket, e);
+				try {
+					inSocket.close();
+				} catch (IOException innerE) {
+					logger.debug("Error closing socket ", innerE);
+				}
+				clientsSockets.remove(inSocket);
 			}
 
 		}
