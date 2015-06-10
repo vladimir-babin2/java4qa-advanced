@@ -54,7 +54,13 @@ public class ClientConnectionHandler implements Runnable {
 						socketWriter.newLine();
 						socketWriter.flush();
 					} catch (IOException e) {
-						logger.error("Error writing message " + message + " to socket " + clientSocket, e);
+						logger.debug("Error writing message " + message + " to socket " + clientSocket + ". Closing socket", e);
+						try {
+							clientSocket.close();
+						} catch (IOException innerE) {
+							logger.debug("Error closing socket ", innerE);
+						}
+						clientsSockets.remove(clientSocket);
 					}
 				}
 			} catch (IOException e) {
