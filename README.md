@@ -32,6 +32,7 @@ Starting with Java Code for QA
 - Arrays 
 - Strings 
 - Static code analyser demo 
+- Java8 key features
 
 # Exceptions 
 - Exceptions in Java 
@@ -42,7 +43,6 @@ Starting with Java Code for QA
 - j.l.System 
 - Object
 - String
-- Collections 
 
 # IO 
 - Streams
@@ -53,6 +53,12 @@ Starting with Java Code for QA
 - Threads in Java 
 - Thread API 
 - Best practices for multithreaded design 
+
+# Collections
+- Collection
+- List
+- Set
+- Map
 
 # Practice 
 - Refactoring to multithreaded network app 
