@@ -73,3 +73,11 @@ Starting with Java Code for QA
 - Connection Pools 
 - PerparedStatement Caches
 
+# Spring
+- Core
+- Testing
+
+# JSON for testing
+
+# MVN plugins
+
