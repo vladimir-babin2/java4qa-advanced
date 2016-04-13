@@ -2,7 +2,11 @@ package design.demo;
 
 public class Logger {
     private LoggerFilter loggerFilter = FilterFactory.create();
-    private LoggerAppender loggerAppender = new ConsoleLoggerAppender();
+    private LoggerAppender loggerAppender;
+
+    public Logger(LoggerAppender loggerAppender) {
+        this.loggerAppender = loggerAppender;
+    }
 
     public void log(String message, int level) {
         if (loggerFilter.filter(message, level)) {
@@ -13,6 +17,6 @@ public class Logger {
 
 class LoggerTest {
     public static void main(String[] args) {
-        new Logger().log("message", 3);
+        new Logger(new ConsoleLoggerAppender()).log("message", 3);
     }
 }
