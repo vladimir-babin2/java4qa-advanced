@@ -1,8 +1,8 @@
 package design.demo;
 
 public class Logger {
-    private LeveledLoggerFilter loggerFilter = new LeveledLoggerFilter();
-    private ConsoleLoggerAppender loggerAppender = new ConsoleLoggerAppender();
+    private LoggerFilter loggerFilter = new LeveledLoggerFilter();
+    private LoggerAppender loggerAppender = new ConsoleLoggerAppender();
 
     public void log(String message, int level) {
         if (loggerFilter.filter(message, level)) {
