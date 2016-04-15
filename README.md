@@ -81,3 +81,8 @@ Starting with Java Code for QA
 
 # MVN plugins
 
+Resources
+=========
+http://54.164.53.247:8080/jenkins/
+
+
