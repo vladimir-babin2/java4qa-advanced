@@ -29,7 +29,13 @@ public class Server {
 
 					clientsSockets.add(clientSocket);
 
-					Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
+					Thread clientConnectionHandler = new Thread(
+						new ClientConnectionHandler(
+							clientSocket,
+							clientsSockets,
+							new ChatBusinessLogic(clientSocket, clientsSockets)
+						)
+					);
 					clientConnectionHandler.setDaemon(true);
 					clientConnectionHandler.start();
 				} catch (SocketException e) {

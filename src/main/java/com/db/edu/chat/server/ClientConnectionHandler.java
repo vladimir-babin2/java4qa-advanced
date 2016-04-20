@@ -17,50 +17,23 @@ public class ClientConnectionHandler implements Runnable {
 	
 	private final Socket inSocket;
 	private final Collection<Socket> clientsSockets;
+	private BusinessLogic businessLogic;
 
-	public ClientConnectionHandler(Socket clientSocket, Collection<Socket> clientsSockets) throws IOException {
+	public ClientConnectionHandler(
+		Socket clientSocket,
+		Collection<Socket> clientsSockets,
+		BusinessLogic businessLogic) throws IOException {
+
 		this.inSocket = clientSocket;
 		this.clientsSockets = clientsSockets;
+		this.businessLogic = businessLogic;
 	}
 
 	
 	public void run() {
 		while(true) {
 			try {
-				BufferedReader socketReader = new BufferedReader(new InputStreamReader(inSocket.getInputStream()));
-				String message = socketReader.readLine();
-				if(message == null) break;
-
-				logger.info("Message from client "
-						+ inSocket.getInetAddress() + ":"
-						+ inSocket.getPort() + "> "
-						+ message);
-
-				for (Socket outSocket : clientsSockets) {
-					try {
-						if (outSocket.isClosed()) continue;
-						if (!outSocket.isBound()) continue;
-						if (!outSocket.isConnected()) continue;
-						if (outSocket == this.inSocket) continue;
-						logger.info("Writing message " + message + " to socket " + outSocket);
-
-						BufferedWriter socketWriter = new BufferedWriter(new OutputStreamWriter(outSocket.getOutputStream()));
-						socketWriter.write(message);
-						socketWriter.newLine();
-						socketWriter.flush();
-					} catch (IOException e) {
-						logger.error("Error writing message " + message + " to socket " + outSocket + ". Closing socket", e);
-						try {
-							outSocket.close();
-						} catch (IOException innerE) {
-							logger.error("Error closing socket ", innerE);
-						}
-
-						logger.error("Removing connection " + outSocket);
-						clientsSockets.remove(outSocket);
-					}
-				}
-
+				businessLogic.handle();
 			} catch (IOException e) {
 				logger.error("Network reading message from socket " + inSocket, e);
 				try {
