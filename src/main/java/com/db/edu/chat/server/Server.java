@@ -24,14 +24,8 @@ public class Server {
 		public void run() {
 			while(!isInterrupted()) {
 				try {
-					Socket clientSocket = serverSocket.accept();
-					logger.info("Client connected: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
-
-					clientsSockets.add(clientSocket);
-
-					Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
-					clientConnectionHandler.setDaemon(true);
-					clientConnectionHandler.start();
+					Socket clientSocket = getClientSocket();
+					createClientConnectionHandler(clientSocket);
 				} catch (SocketException e) {
 					logger.debug("Intentionally closed socket: time to stop");
 					break;
@@ -42,7 +36,21 @@ public class Server {
 			}
 		}
 	};
-	
+
+	private Socket getClientSocket() throws IOException {
+		Socket clientSocket = serverSocket.accept();
+		logger.info("Client connected: " + clientSocket.getInetAddress() + ":" + clientSocket.getPort());
+
+		clientsSockets.add(clientSocket);
+		return clientSocket;
+	}
+
+	private void createClientConnectionHandler(Socket clientSocket) throws IOException {
+		Thread clientConnectionHandler = new Thread(new ClientConnectionHandler(clientSocket, clientsSockets));
+		clientConnectionHandler.setDaemon(true);
+		clientConnectionHandler.start();
+	}
+
 	public void start() throws ServerError {
 		try {
 			serverSocket = new ServerSocket(PORT);
