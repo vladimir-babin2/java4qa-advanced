@@ -7,15 +7,14 @@ import java.util.Collection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-/**
- * Created by Student on 19.05.2016.
- */
 public class BusinessLogic   {
 
     private static final Logger logger = LoggerFactory.getLogger(ClientConnectionHandler.class);
 
     public static void exchangeLogic(Socket inputSocket, Collection<Socket> clientsSockets) throws IOException {
         String message = readMessage(inputSocket);
+        /*MessageHandler messageHandler = new MessageHandler(inputSocket,clientsSockets);
+        message = messageHandler.readMessage();*/
         if(message == null) return;
 
         logger.info("Message from client "
